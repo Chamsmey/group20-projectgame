@@ -5,9 +5,11 @@ root.geometry("758x650")
 frame=tk.Frame()
 frame.master.title("Game eater")
 canvasImage=tk.Canvas(root,width=100,height=100)
-canvas=tk.Canvas(root,width=500,height=550)
 bg=tk.PhotoImage(file="image\dd.png")
 lives=tk.PhotoImage(file="image\live.png")
+def Disply():
+    moveFruit()
+canvas=tk.Canvas(frame,width=500,height=550)
 canvas.create_image(0,0,image=bg,anchor="nw")
 x=20
 y=20
@@ -16,8 +18,6 @@ for i in range(5):
     canvas.create_image(x,y,image=lives)
     x+=30
     # y+=20
-def Disply():
-    displayGrid()
 ##button----------------------------------------------------
 
 buttonPlay=tk.Button(frame,text="Play",bg="blue",width=5,height=0,command=Disply)
@@ -26,7 +26,7 @@ buttonExit=tk.Button(frame,text="Exit",bg="blue",width=5,height=0,command=root.d
 
 
 grid=[
-        [0,0,0,0,2,0,0,2,0,0,0,0,0,0,0],
+        [0,0,0,0,3,0,0,0,0,0,4,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -65,6 +65,9 @@ def displayGrid():
             elif col==3:
                 canvas.create_rectangle(x1,y1,x2,y2,fill="Blue")
             
+            elif col==4:
+                canvas.create_rectangle(x1,y1,x2,y2,fill="green")
+            
             else:
                 canvas.create_rectangle(x1,y1,x2,y2,fill="")
             x1=x2
@@ -73,31 +76,34 @@ def displayGrid():
         y2+=50
         x1=3
         x2=53
-        
-
 ##rendom----------------------------------------
 def ramdomFruit():
     global grid
     posiF=randrange(0,14)
-    grid[0][posiF]=3
-                
+    grid[0][posiF]=3             
     print(posiF)
-##move food ==
+##move food ==------------------------------------
 ramdomFruit()
 def moveFruit():
+    time=randrange(100,4000)       
+    timeS=randrange(100,4000)       
     global grid
+    stop=False
     stopMove=False
     for row in range(len(grid)-1):
         for col in range(len(grid[row])):
-            if (grid[row][col]==3) and (not stopMove):
+            if (grid[row][col]==3) and (not stopMove) and (grid[row+1][col]==1):
+                grid[row][col]=0
+                grid[row+1][col]=1
+                stopMove=True
+            elif (grid[row][col]==3) and (not stopMove) and (grid[row+1][col]!=1):
                 grid[row][col]=0
                 grid[row+1][col]=3
                 stopMove=True
-    displayGrid()
-    canvas.after(2000,lambda:moveFruit())    
-
-
+            
     
+    displayGrid()
+    canvas.after(time,lambda:moveFruit())    
     
 ##move left character----------------------------------
 def moveLeft(event):
@@ -123,7 +129,7 @@ def moveRight(event):
                 stop=True
     displayGrid()
 ##call function-----------
-moveFruit()
+
 ##animation-------------------------------
 root.bind("<Left>",moveLeft)
 root.bind("<Right>",moveRight)
