@@ -122,6 +122,7 @@ def moveFruit():
     grid=Fruitgrid    
         
     displayGrid()  
+    canvas.after(5000,lambda:ramdomFruit())    
     canvas.after(1000,lambda:moveFruit())    
     
 ##move left character----------------------------------
@@ -155,7 +156,7 @@ def moveRight(event):
                 grid[row][col+1]=1
                 stop=True
     displayGrid()   
-    winsound.PlaySound("sound\eat.wav",winsound.SND_FILENAME)
+    # winsound.PlaySound("sound\eat.wav",winsound.SND_FILENAME)
 ##call function-----------
 
 ##animation-------------------------------
