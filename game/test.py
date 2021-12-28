@@ -1,34 +1,16 @@
 import tkinter as tk
-from random import choice, randrange
-root=tk.Tk()
-root.geometry("758x650")
-frame=tk.Frame()
-frame.master.title("Game eater")
-canvas=tk.Canvas(frame)
+# import tkMessageBox
 
-character=canvas.create_rectangle(100,300,150,350,fill="blue")
-##call function-----------
+# import tkMessageBox
+# import Tkinter
 
-x=0
-y=0
+top = tk.Tk()
 
-enemy=canvas.create_oval(10,10,20,20,fill="red")
-def moveEnemy():
-    global x,y
-    canvas.move(enemy,x,y+5)
-    canvas.after(100,lambda:moveEnemy())
-moveEnemy()
-def moveLeft(evnet):
-    global x,y
-    canvas.move(character,x-10,y)
-def moveRight(event):
-    global x,y
-    canvas.move(character,x+10,y)
-##animation-------------------------------
-root.bind("<Left>",moveLeft)
-root.bind("<Right>",moveRight)
-##---------------------------------
-canvas.pack(expand=True,fill="both")
-frame.pack(expand=True,fill="both")
-root.mainloop()
+def helloCallBack():
+   tkMessageBox.showinfo( "Hello Python", "Hello World")
 
+B = tk.Button(top, text ="Hello", command = helloCallBack)
+
+B.pack()
+B.place( relx=1,rely=1,relheight=100, relwidth=100)
+top.mainloop()
