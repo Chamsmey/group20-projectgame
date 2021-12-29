@@ -3,20 +3,18 @@ import winsound
 from random import choice, randrange
 root=tk.Tk()
 root.geometry("758x600")
+root.resizable(0,0)
 frame=tk.Frame(root,bg="red")
 frame.master.title("Game eater")
 canvas=tk.Canvas(frame,width=100,height=100)
 bg=tk.PhotoImage(file="image\grounde.png")
 bg2=tk.PhotoImage(file="image\Pro.png")
 canvas=tk.Canvas(frame,width=500,height=550)
-
 def play():
     global isPlay 
     isPlay=True
-    displayGrid()
-    global buttonPlay
+    check()
     moveFruit()
-    
 ##button----------------------------------------------------
 
 ##global variable------------------
@@ -38,61 +36,52 @@ def displayGrid():
     canvas.delete("all")
     global grid,positionfruit,  score ,lives ,isPlay
     ##-bg-------------------------------------------------------------------------------------------
-    if not isPlay:
-        canvas.create_image(0,0,image=bg2,anchor="nw")
-        canvas.create_text(350,100,text="Welcome to the best eater",font=("",30),fill="white")
-        buttonPlay=tk.Button(canvas,text="Play",bg="#64ffda",bd=1,fg="white",font=("",15),padx=10,pady=0,width=5,height=0,command=play)
-        buttonExit=tk.Button(canvas,text="Exit",bg="#64ffda",bd=1,fg="white",font=("",15),padx=10,pady=0,width=5,height=0,command=root.destroy)
-        buttonExit.pack(side="bottom")
-        buttonPlay.pack(side="bottom")
-    else:
-        canvas.create_image(0,0,image=bg,anchor="nw")
-        ##--score--------------------------------------
-        text=canvas.create_text(40,50,text=" Score:"+str(score),font=("",15))
-        
-        ##grid--------------------
+    canvas.create_image(0,0,image=bg,anchor="nw")
+    ##--score--------------------------------------
+    text=canvas.create_text(40,50,text=" Score:"+str(score),font=("",15))
+
+    ##grid--------------------
+    x1=100
+    x2=150
+    y1=100
+    y2=150
+    for row in grid:
+        for col in row:
+            canvas.create_image(x2-25,y2-25,image=wall)
+            if col==1:
+                canvas.create_image(x2-25,y2-25,image=robot)
+            elif col==4:
+                canvas.create_image(x2-25,y2-25,image=fruits[0])
+            elif col==5:
+                canvas.create_image(x2-25,y2-25,image=fruits[1])
+            elif col==6:
+                canvas.create_image(x2-25,y2-25,image=fruits[2])
+            elif col==7:
+                canvas.create_image(x2-25,y2-25,image=fruits[3])
+            elif col==8:
+                canvas.create_image(x2-25,y2-25,image=fruits[4])
+            elif col==9:
+                canvas.create_image(x2-25,y2-25,image=fruits[5])
+            elif col==10:
+                canvas.create_image(x2-25,y2-25,image=fruits[6])
+            elif col==11:
+                canvas.create_image(x2-25,y2-25,image=fruits[7])
+            elif col==3:
+                canvas.create_image(x2-25,y2-25,image=bomb)
+            x1=x2
+            x2+=50  
+        y1=y2
+        y2+=50
         x1=100
         x2=150
-        y1=100
-        y2=150
-        for row in grid:
-            for col in row:
-                canvas.create_image(x2-25,y2-25,image=wall)
-                if col==1:
-                    canvas.create_image(x2-25,y2-25,image=robot)
-                elif col==4:
-                    canvas.create_image(x2-25,y2-25,image=fruits[0])
-                elif col==5:
-                    canvas.create_image(x2-25,y2-25,image=fruits[1])
-                elif col==6:
-                    canvas.create_image(x2-25,y2-25,image=fruits[2])
-                elif col==7:
-                    canvas.create_image(x2-25,y2-25,image=fruits[3])
-                elif col==8:
-                    canvas.create_image(x2-25,y2-25,image=fruits[4])
-                elif col==9:
-                    canvas.create_image(x2-25,y2-25,image=fruits[5])
-                elif col==10:
-                    canvas.create_image(x2-25,y2-25,image=fruits[6])
-                elif col==11:
-                    canvas.create_image(x2-25,y2-25,image=fruits[7])
-                elif col==3:
-                    canvas.create_image(x2-25,y2-25,image=bomb)
-                x1=x2
-                x2+=50  
-            y1=y2
-            y2+=50
-            x1=100
-            x2=150
-
         ## lives -------------------
         x=20
         y=20
         for i in range(lives):
             canvas.create_image(x,y,image=heart)
             x+=30
-    ##----------Button--------------------------
-    
+        ##----------Button--------------------------
+
 ##rendom----------------------------------------
 def ramdomFruit():
     global grid
@@ -137,13 +126,15 @@ def moveFruit():
                 if (grid[row][col]==3) and (grid[row+1][col]==1):
                     grid[row][col]=0
                     Fruitgrid[row+1][col]=1
+                    winsound.PlaySound("sound\wavbomb.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
                     lives-=1
                 elif (grid[row][col]!=3) and (grid[row][col]!=0) and (grid[row+1][col]==1):
                     score+=1
+                    winsound.PlaySound("sound\eat.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
                 elif (grid[row][col]==3) and (grid[row+1][col]!=1):
                     grid[row][col]=0
                     Fruitgrid[row+1][col]=3
-                elif (grid[row][col]==4) and (grid[row+1][col]!=1):
+                elif (grid[row][col]==4) and (grid[row+1][col]!=1): 
                     grid[row][col]=0
                     Fruitgrid[row+1][col]=4
                 elif (grid[row][col]==5) and (grid[row+1][col]!=1):
@@ -162,10 +153,12 @@ def moveFruit():
                     Fruitgrid[row+1][col]=11
             elif( grid[row][col]==1):
                 Fruitgrid[row][col]=1
-    grid=Fruitgrid   
-    displayGrid()
-    canvas.after(time,lambda:moveFruit()) 
-    canvas.after(5000,lambda:ramdomFruit())    
+    if lives>0:
+        grid=Fruitgrid   
+    check()
+    if lives>0:
+        canvas.after(time,lambda:moveFruit()) 
+        canvas.after(5000,lambda:ramdomFruit())    
 ##movecharacter----------------------------------
 def moveChar(char):
     global grid,score, lives
@@ -175,13 +168,19 @@ def moveChar(char):
             if (col<len(grid[row])-1):
                 if (grid[row][col]==1 ) and (grid[row][col+1]!=3) and (grid[row][col+1]!=0):
                     score+=1
+                    winsound.PlaySound("sound\eat.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
                 elif (grid[row][col]==1 ) and (grid[row][col+1]==3):
                     lives-=1
+                    winsound.PlaySound("sound\wavbomb.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
                 else:
                     if (grid[row][col]==1 ) and (grid[row][col-1]!=3) and (grid[row][col-1]!=0):
                         score+=1
+                        winsound.PlaySound("sound\eat.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
+
+                        
                     elif (grid[row][col]==1 ) and (grid[row][col-1]==3):
                         lives-=1
+                        winsound.PlaySound("sound\wavbomb.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
             if (grid[row][col]==1 ) and (not stop) and (col>0) and (char==-1):
                 grid[row][col]=0
                 grid[row][col-1]=1
@@ -190,14 +189,36 @@ def moveChar(char):
                 grid[row][col]=0
                 grid[row][col+1]=1
                 stop=True
-    displayGrid()
+    if lives>0:
+        displayGrid()
 ##move right character----------------------------------
 def moveLeft(event):
     moveChar(-1)
 def moveRight(event):
     moveChar(1)
 ##call function------------------------------------------
-displayGrid()
+def check():
+    global isPlay ,lives
+    if isPlay :
+        if lives>0 and score<100:
+            displayGrid()
+        elif score>=100 and lives>0:
+            lives=0
+            canvas.create_text(350,300,text="you win",font=("",30),fill="white")
+        else:
+            canvas.create_text(350,300,text="you lose",font=("",30),fill="white")
+        
+    elif not isPlay:
+            winsound.PlaySound("sound\play.wav",winsound.SND_FILENAME | winsound.SND_ASYNC)
+            canvas.create_image(0,0,image=bg2,anchor="nw")
+            canvas.create_text(350,100,text="Welcome to the best eater",font=("",30),fill="white")
+            buttonPlay=tk.Button(canvas,text="Play",bg="#64ffda",bd=1,fg="white",font=("",15),padx=10,pady=0,width=5,height=0,command=play)
+            buttonExit=tk.Button(canvas,text="Exit",bg="#64ffda",bd=1,fg="white",font=("",15),padx=10,pady=0,width=5,height=0,command=root.destroy)
+            buttonExit.pack(side="bottom")
+            buttonPlay.pack(side="bottom")
+
+        
+check()
 ##Event-------------------------------
 root.bind("<Left>",moveLeft)
 root.bind("<Right>",moveRight)
